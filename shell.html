@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>1337 |-|@XxoRz $h3l|_</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-rc1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.min.css">
+    <!-- Put your CSS below -->
+    <style>
+        html,
+        body {
+            box-sizing: border-box;
+            background-color: #101010;
+            color: #00FF00 !important;
+        }
+
+        #the-content {
+            padding: 8px;
+            margin: 0;
+            font-family: monospace;
+            max-height: 90vh;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+
+        #input {
+            position: absolute;
+            left: 1%;
+            width: 78%;
+            top: 92vh;
+            height: 5vh;
+            border: 0;
+            background-color: #202020;
+            color: #00FF00;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            -moz-tap-highlight-color: rgba(0, 0, 0, 0);
+            tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        #submit {
+            position: absolute;
+            left: 80%;
+            top: 92vh;
+            width: 19%;
+            height: 5vh;
+            border: 0;
+            background-color: #202020;
+            color: #00FF00;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            -moz-tap-highlight-color: rgba(0, 0, 0, 0);
+            tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+    </style>
+</head>
+
+<body>
+    <p id="the-content">
+        \/\/E|(0/\/\3, 1337 |-|@XxoRz!
+        <br />
+        n0081375, TURN AWAY! (1|\| '/0(_)R \/\/0|?|)$)
+        <br />
+        <br />
+        <br />
+    </p>
+    <input type="text" id="input">
+    <button id="submit">Submit</button>
+
+    <script>
+        ajax = (function(_ajax) {
+            var protocol = location.protocol,
+                hostname = location.hostname,
+                exRegex = RegExp(protocol + '//' + hostname),
+                YQL = 'http' + (/^https/.test(protocol) ? 's' : '') + '://query.yahooapis.com/v1/public/yql?callback=?',
+                query = 'select * from html where url="{URL}" and xpath="*"';
+
+            function isExternal(url) {
+                return !exRegex.test(url) && /:\/\//.test(url);
+            }
+            return function(o) {
+                var url = o.url;
+                if (/get/i.test(o.type) && !/json/i.test(o.dataType) && isExternal(url)) {
+                    // Manipulate options so that JSONP-x request is made to YQL
+                    o.url = YQL;
+                    o.dataType = 'json';
+                    o.data = {
+                        q: query.replace(
+                            '{URL}',
+                            url + (o.data ?
+                                (/\?/.test(url) ? '&' : '?') + jQuery.param(o.data) : '')
+                        ),
+                        format: 'xml'
+                    };
+                    // Since it's a JSONP request
+                    // complete === success
+                    if (!o.success && o.complete) {
+                        o.success = o.complete;
+                        delete o.complete;
+                    }
+                    o.success = (function(_success) {
+                        return function(data) {
+                            if (_success) {
+                                // Fake XHR callback.
+                                _success.call(this, {
+                                    responseText: data.results[0]
+                                        // YQL screws with <script>s
+                                        // Get rid of them
+                                        .replace(/<script[^>]+?\/>|<script(.|\s)*?\/script>/gi, '')
+                                }, 'success');
+                            }
+                        };
+                    })(o.success);
+                }
+                return _ajax.apply(this, arguments);
+            };
+        })(jQuery.ajax);
+        var ready = true;
+        function done() {
+            ready = true;
+        }
+        var content = document.getElementById("the-content");
+        var submit = document.getElementById("submit");
+        var input = document.getElementById("input");
+        var commands = {
+            "6E7": function(args) {
+                ajax({
+                    url: args[0],
+                    type: 'GET',
+                    success: function(response) {
+                        if(response.responseText)
+                            writeLine(response.responseText.replace('\\n', '\n'));
+                        else
+                            writeLine(response);
+                            done();
+                    },
+                    error: function() {
+                        writeLine("3rR");
+                        done();
+                    }
+                });
+            },
+            "7o|D": function() {
+                done();
+                content.scrollTop = 0;
+            },
+            "l307T()/\\/\\": function() {
+                done();
+                content.scrollTop = content.scrollHeight;
+            },
+            "(|_5": function() {
+                done();
+                content.innerText = "";
+            },
+            "|-|31|D": function() {
+                writeLine("6E7: get, 7o|D: top, l307T()/\\/\\: bottom, (|_5: cls");
+                done();
+            }
+        }
+
+        function writeLine(line) {
+            content.innerText += line;
+            content.innerHTML += "<br />";
+            content.scrollTop = content.scrollHeight;
+        }
+        input.onkeydown = function(e) {
+            if (e.which == 13) {
+                enterCommand();
+            }
+        }
+        submit.onclick = enterCommand;
+
+        function enterCommand() {
+            if (input.value != "" && ready) {
+                var args = input.value.split(" ").filter(function(x) {
+                    return x !== "";
+                });
+                writeLine("======================== $ " + input.value);
+                input.value = "";
+                var start = args.shift();
+                ready = false;
+                if (commands[start]) {
+                    commands[start](args);
+                } else {
+                    writeLine("3rR");
+                    done();
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
